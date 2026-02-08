@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: twodo-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Amitbush/twodo-app.git
+    targetRevision: feature/helm-setup
+    path: twodo-charts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
