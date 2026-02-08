@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Amitbush/twodo-app.git
     targetRevision: feature/helm-setup
-    path: twodo-charts
+    path: twodo-chart
   destination:
     server: https://kubernetes.default.svc
     namespace: default
