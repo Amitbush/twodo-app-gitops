@@ -1,14 +1,35 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: twodo-app
+  name: twodo-app-prod
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: https://github.com/Amitbush/twodo-app.git
     targetRevision: main
     path: twodo-chart
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          annotations:
+            kubernetes.io/ingress.class: alb
+            alb.ingress.kubernetes.io/scheme: internet-facing
+            alb.ingress.kubernetes.io/target-type: ip
+            alb.ingress.kubernetes.io/group.name: "twodo-app-stack"
+            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+            alb.ingress.kubernetes.io/ssl-redirect: '443'
+            # Corrected Protocols: Use HTTP for backend communication
+            alb.ingress.kubernetes.io/backend-protocol: HTTP
+            alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+          hosts:
+            - host: twodo-app.org
+              paths:
+                - path: /
+                  pathType: Prefix
   destination:
     server: https://kubernetes.default.svc
     namespace: production
@@ -16,5 +37,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions: 
+    syncOptions:
       - CreateNamespace=true
