@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: twodo-backend-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus-stack # מחבר אותו לפרומתאוס שהתקנו ב-Terraform
+spec:
+  selector:
+    matchLabels:
+      app: twodo-backend # ודאי שזה הלייבל של ה-Service שלך ב-App Repo
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
